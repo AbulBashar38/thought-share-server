@@ -3,13 +3,12 @@ const express = require("express");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
-
 const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.q66zrl2.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vpo7dz0.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -18,21 +17,17 @@ const client = new MongoClient(uri, {
 
 const run = async () => {
   try {
-    const db = client.db("moontech");
-    const productCollection = db.collection("product");
-
+    const productCollection = client.db("moon-tech").collection("products");
     app.get("/products", async (req, res) => {
       const cursor = productCollection.find({});
-      const product = await cursor.toArray();
+      const products = await cursor.toArray();
 
-      res.send({ status: true, data: product });
+      res.send({ status: true, data: products });
     });
 
     app.post("/product", async (req, res) => {
-      const product = req.body;
-
+      const product = req.body.product;
       const result = await productCollection.insertOne(product);
-
       res.send(result);
     });
 
@@ -40,6 +35,14 @@ const run = async () => {
       const id = req.params.id;
 
       const result = await productCollection.deleteOne({ _id: ObjectId(id) });
+      res.send(result);
+    });
+    app.put("/updateProduct/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const product = req.body;
+      const updateDocument = { $set: { ...product } };
+      const result = await productCollection.updateOne(filter, updateDocument);
       res.send(result);
     });
   } finally {
