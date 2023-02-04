@@ -17,32 +17,32 @@ const client = new MongoClient(uri, {
 
 const run = async () => {
   try {
-    const productCollection = client.db("moon-tech").collection("products");
-    app.get("/products", async (req, res) => {
-      const cursor = productCollection.find({});
-      const products = await cursor.toArray();
+    const thoughtCollection = client.db("thought-share").collection("thoughts");
+    app.get("/thoughts", async (req, res) => {
+      const cursor = thoughtCollection.find({});
+      const thoughts = await cursor.toArray();
 
-      res.send({ status: true, data: products });
+      res.send({ status: true, data: thoughts });
     });
 
-    app.post("/product", async (req, res) => {
-      const product = req.body.product;
-      const result = await productCollection.insertOne(product);
+    app.post("/thought", async (req, res) => {
+      const thought = req.body.thought;
+      const result = await thoughtCollection.insertOne(thought);
       res.send(result);
     });
 
-    app.delete("/product/:id", async (req, res) => {
+    app.delete("/thought/:id", async (req, res) => {
       const id = req.params.id;
 
-      const result = await productCollection.deleteOne({ _id: ObjectId(id) });
+      const result = await thoughtCollection.deleteOne({ _id: ObjectId(id) });
       res.send(result);
     });
-    app.put("/updateProduct/:id", async (req, res) => {
+    app.put("/updateThought/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
-      const product = req.body;
-      const updateDocument = { $set: { ...product } };
-      const result = await productCollection.updateOne(filter, updateDocument);
+      const thought = req.body;
+      const updateDocument = { $set: { ...thought } };
+      const result = await thoughtCollection.updateOne(filter, updateDocument);
       res.send(result);
     });
   } finally {
