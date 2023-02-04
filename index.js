@@ -52,7 +52,7 @@ const run = async () => {
 run().catch((err) => console.log(err));
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Hello World! hi");
 });
 
 app.listen(port, () => {
